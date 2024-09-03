@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Recurring Ticket</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+</head>
+<body>
+<div class="container">
+    <h1>Create Recurring Ticket</h1>
+    <form method="post" id="recurring-ticket-form">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="recurring_description">Description</label>
+            <textarea class="form-control" id="recurring_description" name="recurring_description"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="frequency">Frequency</label>
+            <select class="form-control" id="frequency" name="frequency">
+                <option value="minutely">Minutely</option>
+                <option value="hourly">Hourly</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="yearly">Yearly</option>
+                <option value="custom">Custom</option>
+            </select>
+        </div>
+        <div class="form-group" id="custom-interval-group" style="display:none;">
+            <label for="custom_interval">Custom Interval</label>
+            <input type="number" class="form-control" id="custom_interval" name="custom_interval">
+            <label for="custom_unit">Custom Unit</label>
+            <select class="form-control" id="custom_unit" name="custom_unit">
+                <option value="days">Days</option>
+                <option value="weeks">Weeks</option>
+                <option value="months">Months</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="next_run">Next Run Date</label>
+            <input type="date" class="form-control" id="next_run" name="next_run">
+        </div>
+        <button type="submit" class="btn btn-primary">Create Recurring Ticket</button>
+    </form>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#frequency').change(function() {
+            if ($(this).val() === 'custom') {
+                $('#custom-interval-group').show();
+            } else {
+                $('#custom-interval-group').hide();
+            }
+        });
+    
+        $('#recurring-ticket-form').submit(function(event) {
+            event.preventDefault();
+    
+            $.ajax({
+                type: 'POST',
+                url: '{% url "create_recurring_ticket" %}',
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        alert('Recurring ticket created successfully!');
+                        window.location.href = "{% url 'ticket-list' %}";  // Redirect to ticket list page
+                    } else {
+                        alert('Failed to create recurring ticket.');
+                    }
+                },
+                error: function(error) {
+                    alert('An error occurred.');
+                }
+            });
+        });
+    });
+    </script>
+
+</body>
+</html>

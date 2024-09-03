@@ -1,0 +1,108 @@
+{% extends 'tickets/base.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block extra_css %}
+
+    <style>
+        #password-requirements {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f8f9fa;
+        }
+        .requirement {
+            margin-bottom: 5px;
+            color: #dc3545;
+            transition: color 0.3s ease;
+        }
+        .requirement.met {
+            color: #28a745; 
+        }
+        .requirement i {
+            margin-right: 5px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header" style="color: dimgrey;">Register</div>
+                <div class="card-body">
+                    {% crispy form %}
+                    <div id="password-requirements">
+                        <p>Password requirements:</p>
+                        <div class="requirement" id="length-req">
+                            <i class="fas fa-times-circle"></i> At least 8 characters
+                        </div>
+                        <div class="requirement" id="uppercase-req">
+                            <i class="fas fa-times-circle"></i> At least one uppercase letter
+                        </div>
+                        <div class="requirement" id="lowercase-req">
+                            <i class="fas fa-times-circle"></i> At least one lowercase letter
+                        </div>
+                        <div class="requirement" id="number-req">
+                            <i class="fas fa-times-circle"></i> At least one number
+                        </div>
+                        <div class="requirement" id="special-req">
+                            <i class="fas fa-times-circle"></i> At least one special character
+                        </div>
+                    </div>
+                    <p class="mt-3 text-center">Already have an account? <a style="color: darkgreen;" href="{% url 'login' %}">Login</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}  
+ <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script
+  src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js"
+  integrity="sha512-IOebNkvA/HZjMM7MxL0NYeLYEalloZ8ckak+NDtOViP7oiYzG5vn6WVXyrJDiJPhl4yRdmNAG49iuLmhkUdVsQ=="
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"></script>
+    <script>
+        $("#id_department").removeAttr('class')
+        console.log('before')
+        $("#id_department").selectize()
+        console.log('after')
+    </script>
+
+     <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+    <script>
+        $(document).ready(function() {
+            // ... existing Select2 initialization ...
+
+            const passwordField = $('#id_password1');
+            const requrements = {
+                length: { regex: /.{8,}/, element: $('#length-req') },
+                uppercase: { regex: /[A-Z]/, element: $('#uppercase-req') },
+                lowercase: { regex: /[a-z]/, element: $('#lowercase-req') },
+                number: { regex: /[0-9]/, element: $('#number-req') },
+                special: { regex: /[^A-Za-z0-9]/, element: $('#special-req') }
+            };
+
+            passwordField.on('input', function() {
+                const password = $(this).val();
+                
+                for (let req in requirements) {
+                    if (requirements[req].regex.test(password)) {
+                        requirements[req].element.addClass('met');
+                        requirements[req].element.find('i').removeClass('fa-times-circle').addClass('fa-check-circle');
+                    } else {
+                        requirements[req].element.removeClass('met');
+                        requirements[req].element.find('i').removeClass('fa-check-circle').addClass('fa-times-circle');
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}

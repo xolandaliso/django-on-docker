@@ -1,0 +1,116 @@
+{% extends 'tickets/base.html' %}
+
+{% block title %}Create Ticket{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mt-5">
+                <div class="card-header">Create Ticket</div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" id="ticket-form">
+                        {% csrf_token %}
+                        {{ ticket_form|crispy }}
+
+                        <!-- checkbox for Recurring Ticket -->
+                        <div>
+                            <label for="is_recurring">Is Recurring?</label>
+                            <input type="checkbox" id="is_recurring" name="is_recurring">
+                        </div>
+
+                        <!-- recurring Ticket Form (Hidden by Default) -->
+                        <div id="recurring-fields" style="display:none;">
+                            {{ recurring_ticket_form.frequency|as_crispy_field }}
+                            <div id="custom-frequency-fields" style="display:none;">
+                                {{ recurring_ticket_form.custom_interval|as_crispy_field }}
+                                {{ recurring_ticket_form.custom_unit|as_crispy_field }}
+                            </div>
+                        </div>
+
+                        <div id="uploaded-files"></div>
+                        <button type="submit" class="btn btn-secondary">Create Ticket</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.querySelector('input[name="documents"]');
+    const uploadedFilesDiv = document.getElementById('uploaded-files');
+    const recurringCheckbox = document.getElementById('is_recurring');
+    const recurringFields = document.getElementById('recurring-fields');
+    const frequencyField = document.getElementById('id_frequency');
+    const customFrequencyFields = document.getElementById('custom-frequency-fields');
+    const customIntervalField = document.getElementById('id_custom_interval');
+    const customUnitField = document.getElementById('id_custom_unit');
+
+    // File input handling
+    if (fileInput) {
+        fileInput.addEventListener('change', function() {
+            uploadedFilesDiv.innerHTML = '';
+            Array.from(this.files).forEach((file, index) => {
+                const fileDiv = document.createElement('div');
+                fileDiv.innerHTML = `
+                    ${file.name}
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeFile(${index})" style="margin-left: 10px;">Remove</button>
+                `;
+                uploadedFilesDiv.appendChild(fileDiv);
+            });
+        });
+    } else {
+        console.error('File input not found');
+    }
+
+    window.removeFile = function(index) {
+        const dt = new DataTransfer();
+        Array.from(fileInput.files).forEach((file, i) => {
+            if (i !== index) {
+                dt.items.add(file);
+            }
+        });
+        fileInput.files = dt.files;
+        fileInput.dispatchEvent(new Event('change'));
+    };
+
+    function toggleRecurringFields() {
+        const isRecurring = recurringCheckbox.checked;
+        recurringFields.style.display = isRecurring ? 'block' : 'none';
+        frequencyField.required = isRecurring;
+        
+        if (!isRecurring) {
+            customFrequencyFields.style.display = 'none';
+            frequencyField.value = '';
+            customIntervalField.value = '';
+            customUnitField.value = '';
+        } else {
+            toggleCustomFrequencyFields();
+        }
+    }
+
+    function toggleCustomFrequencyFields() {
+        const isCustom = frequencyField.value === 'custom';
+        customFrequencyFields.style.display = isCustom ? 'block' : 'none';
+        customIntervalField.required = isCustom;
+        customUnitField.required = isCustom;
+        
+        if (!isCustom) {
+            customIntervalField.value = '';
+            customUnitField.value = '';
+        }
+    }
+
+    recurringCheckbox.addEventListener('change', toggleRecurringFields);
+    frequencyField.addEventListener('change', toggleCustomFrequencyFields);
+    
+    // Initialize on page load
+    toggleRecurringFields();
+    toggleCustomFrequencyFields();
+});
+</script>
+{% endblock %}

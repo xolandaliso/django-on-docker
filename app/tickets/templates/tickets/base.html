@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Ticket Tracking Platform{% endblock %}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" integrity="sha512-vWbME4TNgIyaBbIjA81iZ8gOPLoO8fMMlSsHNwxEFXQA3GygYihro7BDikJOymFmLzINsbpeCoJfBfxaYg8OA==" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"> -->
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.default.min.css"
+    integrity="sha512-pTaEn+6gF1IeWv3W1+7X7eM60TFu/agjgoHmYhAfLEU8Phuf6JKiiE8YmsNC0aCgQv4192s4Vai8YZ6VNM6vyQ=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+/>
+    {% block extra_head %}{% endblock %}
+
+    {% load static %}
+
+    <style>
+        body {
+            background-color: #f0f0f0; /* light grey background color */
+        }
+        .comment {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            max-width: 60%;
+        }
+
+        .comment-left {
+            background-color: #f8f9fa; /* light background for other users' comments */
+            align-self: flex-start;
+            text-align: left;
+        }
+
+        .comment-right {
+            background-color: #d7e1ea; /* light green background for logged-in user's comments */
+            align-self: flex-end;
+            text-align: left;
+            margin-left: auto; /* push the comment box to the right */
+        }
+
+        .comment-box {
+            max-width: 100%;
+        }
+
+        .nav-item {
+            margin-right: 10px; /* add space between nav items */
+        }
+    </style>
+</head>
+<body>
+    <!-- navbar -->
+
+    {% include 'tickets/partials/navbar.html' %}
+    {% include 'tickets/partials/messages.html' %}
+
+    {% block content %}
+
+    <!-- linking other pages here -->
+
+    {% endblock content%}
+
+
+    <script>
+        console.log('before')
+    </script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/htmx.org@2.0.0" integrity="sha384-wS5l5IKJBvK6sPTKa2WZ1js3d947pvWXbPJ1OmWfEuxLgeHcEbjUUA5i9V5ZkpCw" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx.org@1.6.1"></script> 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-vWbME4TNgIyaBbIjA81iZ8gOPLoO8fMMlSsHNwxEFXQA3GygYihro7BDikJOymFmLzINsbpeCoJfBfxaYg8OA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+    <script>
+        console.log('before23')
+    </script>
+
+{% block extra_js %}
+{% endblock extra_js %}
+</body>
+</html>

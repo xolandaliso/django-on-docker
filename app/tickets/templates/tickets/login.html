@@ -1,0 +1,92 @@
+{% extends 'tickets/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Login{% endblock %}
+{% load static %}
+
+
+{% block content %}
+
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body d-flex align-items-center">
+                    <div class="logo-container">
+                        <img src="{% static 'img/2aday-circle.png' %}" alt="Company Logo" class="img-fluid grayscale-image">
+                    </div>
+                    <div class="vertical-line">&nbsp;</div>  <div class="login-form ml-2">  <h2 class="card-title text-center mb-4" style="color:dimgrey;">Login</h2>
+                        <form method="post">
+                            {% csrf_token %}
+                            {{ form|crispy }}
+                            <div class="mb-3">
+                                <label for="id_username" class="form-label" style="color: dimgrey;">Username</label>
+                                <input type="text" class="form-control" id="id_username" name="username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="id_password" class="form-label" style="color: dimgrey;">Password</label>
+                                <input type="password" class="form-control" id="id_password" name="password" required>
+                            </div>
+                            <button type="submit" class="btn btn-secondary w-100" >Login</button>
+                            {% if error %}
+                                <p style="color: red;">{{ error }}</p>
+                            {% endif %}
+                        </form>
+                        <p class="mt-3 text-center" style="color: dimgrey;">No account yet? <a style="color: green;" href="{% url 'register' %}">Register</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f0f0f0; /* Light grey background color */
+    }
+    .card {
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        display: flex; /* Use flexbox for card layout */
+        height: 100%; /* Ensure card takes full height */
+    }
+    .logo-container {
+        flex: 1;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .vertical-line {
+        border-left: 2px solid grey;
+        height: 100%; /* Ensure the line stretches full height */
+        margin: 0 35px;
+    }
+    .login-form-container {
+        flex: 1;
+        display: flex;
+        align-items: center;
+    }
+    .login-form {
+        width: 100%;
+        max-width: 300px; /* Adjust the maximum width as needed */
+        padding: 20px;
+    }
+    .card-body {
+        box-sizing: border-box; /* Include padding and border in height calculation */
+        display: flex; /* Use flexbox for card-body layout */
+        align-items: center; /* Center items vertically */
+        height: 450px; /* Adjust this height to increase container size */
+        padding: 20px;
+    }
+
+    .grayscale-image {
+        filter: grayscale(100%);
+        max-width: 100%;
+        height: auto; /* Ensure image stays proportional */
+    }
+</style>
+
+{% endblock %}
+
+

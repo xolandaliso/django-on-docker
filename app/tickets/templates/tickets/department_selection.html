@@ -1,0 +1,26 @@
+{% extends 'tickets/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Department selection{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card mt-5">
+                    <div class="card-header" style="color: dimgrey;">Create New Ticket for department</div>
+                    <div class="card-body">
+                        <div class="row">
+                            {% for department in departments %}
+                                <div class="col-md-4 mb-3">
+                                    <a href="{% url 'department_ticket_creation' %}?department={{ department.id }}" class="btn btn-secondary btn-block">{{ department.department_name }}</a>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% include "tickets/partials/get_manage_tickets.html" %}
+    </div>
+{% endblock %}

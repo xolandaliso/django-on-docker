@@ -1,0 +1,59 @@
+{% extends 'tickets/base.html' %}
+
+{% block title %}Ticket {{ ticket.id }} Details{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mt-5">
+                <div class="card-header" style="color: dimgrey;">Ticket {{ ticket.id }} Details</div>
+                <div class="card-body">
+                    <h5>Description:</h5>
+                    <p>{{ ticket.ticket_description }}</p>
+                    <small>Created by: {{ ticket.request_user.get_full_name }}</small> @
+                    <small> {{ ticket.created_at }}</small>
+                    <br>
+                    <small>Status: {{ ticket.ticket_status.status_description }}</small>
+                    <hr>
+                    <h6>Attachments:</h6>   
+                        {% if ticket.documents.all %}
+                            <ul>
+                                {% for document in ticket.documents.all %}
+                                    <li><a href="{{ document.document.url }}">{{ document.document.name }}</a></li>
+                                    <!-- Display other document details as needed -->
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <p>No attachments for this ticket.</p>
+                        {% endif %}
+                    <hr>
+                    <h6>Comments:</h6>
+                    <ul class="list-unstyled comments-list">
+                        {% for comment in comments %}
+                            <li class="comment {% if comment.user == request.user %}comment-right{% else %}comment-left{% endif %}">
+                                <div class="comment-box">
+                                    <p><strong>{{ comment.user.first_name }}</strong>: {{ comment.comment }}</p>
+                                    <small> Added at :{{ comment.created_at }}</small>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <div class="card mt-3">
+                        <div class="card-header" style="color: dimgrey;">Add a Comment</div>
+                        <div class="card-body">
+                            <form method="post" class="comment-form" action="{% url 'ticket_detail' ticket.id %}">
+                                {% csrf_token %}                           
+                                {{ comment_form|crispy }}
+                                <button type="submit" class="btn btn-secondary mt-2" hx-indicator="true">Add Comment</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

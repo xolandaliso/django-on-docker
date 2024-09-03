@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+</head>
+<body style="font-family: Arial, sans-serif; color: #333; margin: 0; padding: 0;">
+    <p style="font-size: 15px; color: grey;">Dear {{ employee_name }},</p>
+    <br>
+    <p style="font-size: 14px;">This is a reminder for the recurring ticket.</p>
+    <br>
+    <p style="font-size: 14px; color: grey;"><strong>Details:</strong></p>
+    <ul style="font-size: 14px; list-style: none; padding: 0; color: grey;">
+        <li><strong>Description:</strong> {{ recurring_description }}</li>
+        <br>
+        <li><strong>Department:</strong> {{ requester_department }} </li>
+        <li><strong>Requester's Department:</strong> {{ requester_department }}</li>
+        <li><strong>Next Run:</strong> {{ next_run }}</li>
+        <hr>
+    </ul>
+    <p>Please make sure to complete this task as scheduled.</p>
+    <p style="font-size: 14px; color: grey;">Thank you,</p>
+    <p style="font-size: 14px; color: grey;">TAD</p>
+    <br>
+    <!-- 2aday image at the bottom -->
+    <img src="{% static 'img/2aday-circle.png' %}" alt="Company Logo" height="70" class="mr-2">
+</body>
+</html>

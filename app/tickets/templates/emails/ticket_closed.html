@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body style="font-family: Arial, sans-serif; color: #333; margin: 0; padding: 0;">
+    <p>Hello {{ user_name }},</p>
+    <p>The following ticket has been closed:</p>
+    <ul>
+        <li><strong>Type:</strong> {{ ticket_type }}</li>
+        <li><strong>Description:</strong> {{ ticket_description }}</li>
+        <li><strong>Status:</strong> {{ ticket_status }}</li>
+        <li><strong>Resolution:</strong> {{ ticket_resolution }}</li>
+        <li><strong>Department:</strong> {{ department_name }}</li>
+    </ul>
+    <p>If you wish to reopen this ticket, click the button below:</p>
+    <a href="{{ reopen_ticket_url }}" style="display: inline-block; padding: 10px 20px; margin: 10px 0; font-size: 14px; font-weight: bold; color: #fff; background-color: lightgray; text-decoration: none; border-radius: 4px;">Reopen Ticket</a>
+    <p>We would also appreciate your feedback on our service. Please take a moment to rate your experience:</p>
+    <a href="{{ rating_url }}" style="display: inline-block; padding: 10px 20px; margin: 10px 0; font-size: 14px; font-weight: bold; color: #fff; background-color:  lightgray; text-decoration: none; border-radius: 4px;">Rate Our Service</a>
+    
+    <p>Thank you,</p>
+    <p>TAD</p>
+</body>
+</html>

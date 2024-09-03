@@ -1,0 +1,109 @@
+{% load static %}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'landing' %}" style="color: dimgrey;">
+            <img src="{% static 'img/2aday-circle.png' %}" alt="Company Logo" height="70" class="mr-2">
+            Ticket Tracking Portal
+        </a>
+
+        <button class="navbar-toggler" 
+                type="button" 
+                data-toggle="collapse" 
+                data-target="#navbarNav"
+                aria-controls="navbarNav" 
+                aria-expanded="false" 
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                {% if user.is_authenticated %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'department_selection' %}" style="color:green">Welcome, {{ user.first_name }}</a>
+                </li>
+                {% if request.session.is_employee %}
+                    {% if request.session.employee_role == 'super_manager' %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                 Tickets
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" style="color:dimgray" href="{% url 'manage_tickets' %}">My Tickets</a>
+                                <a class="dropdown-item" style="color:dimgray" href="{% url 'employee_dashboard' %}?view=all_departments">All Department Tickets</a>
+                            </div>
+                        </li>
+                        {% elif request.session.employee_role == 'manager' %}
+                            {% if request.session.department_assignable %}
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        Tickets
+                                        <span hx-get="{% url 'assign_ticketcounts' %}" 
+                                            hx-swap="outerHTML" hx-trigger="load, every 60s"
+                                            class="ticket-count-badge badge badge-pill badge-secondary"                        
+                                            style="padding: 5px 10px; margin-left: 10px; margin-right: 10px;">
+                                        </span>
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <a class="dropdown-item" style="color:dimgray" href="{% url 'employee_dashboard' %}?view=assigned">Assigned Tickets</a>
+                                        <a class="dropdown-item" style="color:dimgray" href="{% url 'employee_dashboard' %}?view=department">Department Tickets</a>
+                                    </div>
+                                </li>
+                            {% else %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'employee_dashboard' %}?view=department">
+                                        Department Tickets
+                                        <span hx-get="{% url 'assign_ticketcounts' %}" 
+                                            hx-swap="outerHTML" hx-trigger="load, every 60s"
+                                            class="ticket-count-badge badge badge-pill badge-secondary" 
+                                            style="padding: 5px 10px; margin-left: 10px; margin-right: 10px;">
+                                        </span>
+                                    </a>
+                                </li>
+                        {% endif %}
+                        {% elif request.session.employee_role == 'staff' %}
+                            {% if request.session.department_assignable %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'employee_dashboard' %}">
+                                        Assigned Tickets
+                                        <span hx-get="{% url 'assign_ticketcounts' %}" 
+                                            hx-swap="outerHTML" hx-trigger="load, every 60s"
+                                            class="ticket-count-badge badge badge-pill badge-secondary" 
+                                            style="padding: 5px 10px; margin-left: 10px; margin-right: 10px;">
+                                        </span>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endif %}
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'manage_tickets' %}">
+                        Manage Tickets 
+                        <span hx-get="{% url 'myticket_counts' %}" 
+                              hx-swap="outerHTML" hx-trigger="load, every 60s"
+                              class="ticket-count-badge badge badge-pill badge-secondary" 
+                              style="padding: 5px 10px; margin-left: 10px; margin-right: 10px;">
+                        </span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                </li>
+
+                {% else %}
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Login</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'register' %}">Register</a>
+                </li>
+
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

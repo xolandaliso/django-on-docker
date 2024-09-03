@@ -1,0 +1,68 @@
+<p>Open Tickets</p>
+{% if open_tickets %}
+    <div class="list-group" id="open-tickets-list">
+        {% for ticket in open_tickets %}
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="d-flex flex-column">
+                    <a href="{% url 'ticket_detail' ticket.id %}" class="text-decoration-none text-dark">
+                        <h5 class="mb-1">Ticket {{ ticket.id }}</h5>
+                        <p class="mb-1">Description: {{ ticket.ticket_description }}</p>
+                        <small>Created: {{ ticket.created_at }}</small>
+                        <br>
+                        <small>Assigned to: {{ ticket.employee.employee.get_full_name }}</small>
+                        <br>
+                        <small>Status: {{ ticket.ticket_status.status_description }}</small>
+                        <hr>
+                    </a>
+                </div>
+                <div class="d-flex flex-column align-items-end">
+                    <a href="{% url 'ticket_update' ticket.pk %}" class="btn btn-warning btn-sm mb-1 me-2">Update</a>
+                    <a href="{% url 'ticket_delete' ticket.pk %}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to cancel this ticket?');">Cancel</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="d-flex justify-content-center mt-3" id="open-pagination">
+        {% if open_tickets.has_previous %}
+            <a class="btn btn-secondary me-1" href="?open_page={{ open_tickets.previous_page_number }}&search={{ search_query }}">Previous</a>
+        {% endif %}
+        {% if open_tickets.has_next %}
+            <a class="btn btn-secondary" href="?open_page={{ open_tickets.next_page_number }}&search={{ search_query }}">Next</a>
+        {% endif %}
+    </div>
+{% else %}
+    <p>No open tickets found.</p>
+{% endif %}
+
+<br>
+<hr>
+<p>Closed Tickets</p>
+{% if closed_tickets %}
+    <div class="list-group" id="closed-tickets-list">
+        {% for ticket in closed_tickets %}
+            <div class="list-group-item d-flex justify-content-between align-items-center" style="background-color: #e4dbca;">
+                <div class="d-flex flex-column">
+                    <a href="{% url 'ticket_detail' ticket.id %}" class="text-decoration-none text-dark">
+                        <h5 class="mb-1">Ticket {{ ticket.id }}</h5>
+                        <p class="mb-1">Description: {{ ticket.ticket_description }}</p>
+                        <br>
+                        <small>Closed at: {{ ticket.updated_at }}</small>
+                        <br>
+                        <small>Created: {{ ticket.created_at }}</small>
+                        <br>
+                        <hr>
+                    </a>
+                </div>
+                <div class="d-flex flex-column align-items-end">
+                    {% if ticket.updated_at and ticket.updated_at > one_week_ago %}
+                        <a href="{% url 'ticket_reopen' ticket.pk %}" class="btn btn-success btn-sm">Reopen</a>
+                    {% else %}
+                        <button class="btn btn-secondary btn-sm" disabled>Reopen</button>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>No closed tickets found.</p>
+{% endif %}

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+</head>
+<body style="font-family: Arial, sans-serif; color: #333; margin: 0; padding: 0;">
+    <div style="padding: 20px;">
+        <div style="margin-bottom: 20px;">
+            <p style="margin: 0; font-size: 14px; list-style: none; padding: 0; color: grey;">Hi {{ user.username }},</p>
+            <br>
+            {% if user == comment.user %}
+                <p>A new comment has been added to the ticket you created:</p>
+            {% elif user == ticket_employee %}
+                <p>A new comment has been added to the ticket assigned to you:</p>
+            {% endif %}
+            <blockquote>{{ comment.comment }}</blockquote>
+        </div>
+        <div style="font-size: 14px;">
+            <p style="margin: 0; color: grey;">Thank you,</p>
+            <p style="margin: 0; color: grey;">TAD</p>
+            <br>
+            <!-- 2aday image at the bottom -->
+            <img src="{% static 'img/2aday-circle.png' %}" alt="Company Logo" height="70" class="mr-2">
+            
+        </div>
+    </div>
+</body>
+</html>
+    

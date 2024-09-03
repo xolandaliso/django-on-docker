@@ -1,0 +1,29 @@
+{% load crispy_forms_tags %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mt-5">
+                <div class="card-header d-flex justify-content-between align-items-center" style="color: dimgrey;">
+                    <span>Manage Tickets</span>
+                    <form method="GET" 
+                          action="{% url 'get_manage_tickets' %}" 
+                          class="form-inline" 
+                          hx-get="{% url 'get_manage_tickets' %}" 
+                          hx-target="#ticket-list" 
+                          hx-trigger="input delay:500ms, load"
+                          hx-swap="innerHTML">
+                        <div class="input-group">
+                            <input type="text" name="search" class="form-control" placeholder="Search tickets..." value="{{ search_query }}"> 
+                        </div>
+                    </form>
+                </div>
+                <div class="card-body" id="ticket-list">
+                    {% include "tickets/partials/ticket_list_user.html" %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

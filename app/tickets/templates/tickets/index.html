@@ -1,0 +1,17 @@
+{% extends 'tickets/base.html' %}
+
+{% block title %}Ticket Tracking System{% endblock %}
+
+{% block content %}
+<div class="container-fluid d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <h1 class="display-4">Welcome to Ticket Tracking</h1>
+            <a href="{% url 'login' %}" class="btn btn-secondary mt-3">CREATE NEW TICKET</a>
+            <a href="{% url 'login' %}" class="btn btn-secondary mt-3">MANAGE TICKETS</a>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+

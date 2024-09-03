@@ -1,0 +1,137 @@
+{% if view == 'all_departments' and employee.role == 'super_manager' %}
+    {% if department_tickets %}
+        {% for department, tickets in department_tickets.items %}
+            <h5>{{ department }}</h5>
+            <div class="list-group">
+                {% for ticket in tickets %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div class="d-flex flex-column">
+                            <a href="{% url 'ticket_detail' ticket.id %}" class="text-decoration-none text-dark">
+                                <h5 class="mb-1">Ticket {{ ticket.id }}</h5>
+                                <p class="mb-1">Description: {{ ticket.ticket_description }}</p>
+                                <small>Assigned to: {{ ticket.employee.employee.get_full_name }}</small> |
+                                <small>Status: {{ ticket.ticket_status.status_description }}</small>
+                                <br>
+                                <small>Created by: {{ ticket.request_user.get_full_name }} @ {{ ticket.created_at }}</small>
+                                <br>
+                                {% if creator_department %}
+                                    <small>Department: {{ creator_department.department_name }}</small>
+                                {% else %}
+                                    <small>Department information not available.</small>
+                                {% endif %}                                
+                                <hr>
+                            </a>
+                        </div>
+                        <div class="d-flex flex-column align-items-end">
+                            <a href="{% url 'ticket_update' ticket.pk %}" class="btn btn-warning btn-sm">Change status</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No tickets found.</p>
+    {% endif %}
+{% elif view == 'created' and employee.role == 'super_manager' %}
+    {% if created_tickets %}
+        <div class="list-group">
+            {% for ticket in created_tickets %}
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="d-flex flex-column">
+                        <a href="{% url 'ticket_detail' ticket.id %}" class="text-decoration-none text-dark">
+                            <h5 class="mb-1">Ticket {{ ticket.id }}</h5>
+                            <p class="mb-1">Description: {{ ticket.ticket_description }}</p>
+                            <small>Assigned to: {{ ticket.employee.employee.get_full_name }}</small>
+                            <br>
+                            <small>Created by: {{ ticket.request_user.get_full_name }}</small>
+                            <br>
+                            <small>Status: {{ ticket.ticket_status.status_description }}</small>
+                            <br>
+                            <small>Created at: {{ ticket.created_at }}</small>
+                        </a>
+                    </div>
+                    <div class="d-flex flex-column align-items-end">
+                        <a href="{% url 'ticket_update' ticket.pk %}" class="btn btn-warning btn-sm">Change status</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No tickets found.</p>
+    {% endif %}
+{% else %}
+    {% if employee.role == 'manager' and not department.assignable %}
+        {% if assigned_tickets %}
+            <div class="list-group">
+                {% for ticket in assigned_tickets %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div class="d-flex flex-column">
+                            <a href="{% url 'ticket_detail' ticket.id %}" class="text-decoration-none text-dark">
+                                <h5 class="mb-1">Ticket {{ ticket.id }}</h5>
+                                <p class="mb-1">Description: {{ ticket.ticket_description }}</p>
+                                <small>Created by: {{ ticket.request_user.get_full_name }}</small>
+                                <br>
+                                <small>Status: {{ ticket.ticket_status.status_description }}</small>
+                                <br>
+                                <small>Created at: {{ ticket.created_at }}</small>
+                            </a>
+                        </div>
+                        <div class="d-flex flex-column align-items-end">
+                            <a href="{% url 'ticket_update' ticket.pk %}" class="btn btn-warning btn-sm">Change status</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No outbound tickets.</p>
+        {% endif %}
+    {% elif assigned_tickets %}
+        <div class="list-group">
+            {% for ticket in assigned_tickets %}
+                <div class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="d-flex flex-column">
+                        <a href="{% url 'ticket_detail' ticket.id %}" class="text-decoration-none text-dark">
+                            <h5 class="mb-1">Ticket {{ ticket.id }}</h5>
+                            <p class="mb-1">Description: {{ ticket.ticket_description }}</p>
+                            {% if employee.role == 'manager' %}
+                                <p class="mb-1">Assigned to: {{ ticket.employee.employee.get_full_name }}</p>
+                            {% endif %}
+                            <small>Created by: {{ ticket.request_user.get_full_name }} @ {{ ticket.created_at }}</small>
+                            <br>
+                            <small>Status: {{ ticket.ticket_status.status_description }}</small>
+                            {% if creator_department %}
+                                <small>Department: {{ creator_department.department_name }}</small>
+                            {% else %}
+                                <small>Department information not available.</small>
+                            {% endif %}
+                        </a>
+                    </div>
+                    <div class="d-flex flex-column align-items-end">
+                        <a href="{% url 'ticket_update' ticket.pk %}" class="btn btn-warning btn-sm">Change status</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No tickets assigned to you.</p>
+    {% endif %}
+{% endif %}
+<nav aria-label="Page navigation" style="margin-top: 20px;">
+    <ul class="pagination">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?view={{ view }}&page={{ page_obj.previous_page_number }}&search={{ search_query }}" style="color: dimgray;">Previous</a>
+            </li>
+        {% endif %}
+        {% for i in page_obj.paginator.page_range %}
+            <li class="page-item {% if page_obj.number == i %}active{% endif %}">
+                <a class="page-link" href="?view={{ view }}&page={{ i }}&search={{ search_query }}" style="{% if page_obj.number == i %}background-color:dimgray; color: white;{% else %}background-color: lightgray; color: dimgray;{% endif %}">{{ i }}</a>
+            </li>
+        {% endfor %}
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?view={{ view }}&page={{ page_obj.next_page_number }}&search={{ search_query }}" style="color: dimgray;">Next</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>

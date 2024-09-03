@@ -1,0 +1,253 @@
+{% extends "tickets/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mt-5">
+                <div class="card-header d-flex justify-content-between align-items-center" style="color: dimgrey;">
+                    {% if view == 'all_departments' and employee.role == 'super_manager' %}
+                        <span>All Department Tickets</span>
+                    {% elif view == 'created' and employee.role == 'super_manager' %}
+                        <span>My Tickets</span>
+                    {% elif view == 'department' and employee.role == 'manager' %}
+                        <span>{{ employee.department }} Tickets</span>
+                    {% else %}
+                        <span>Assigned Tickets</span>
+                    {% endif %}
+                    <form method="GET" 
+                          action="{% url 'employee_dashboard' %}" 
+                          class="form-inline" 
+                          hx-get="{% url 'employee_dashboard' %}" 
+                          hx-target="#ticket-list" 
+                          hx-trigger="input delay:10ms, search">
+                        <input type="hidden" name="view" value="{{ view }}">
+                        <div class="input-group">
+                            <input type="text" name="search" class="form-control" placeholder="Search tickets..." value="{{ search_query }}"> 
+                        </div>
+                    </form>
+                </div>
+                <div class="card-body">
+                    <div id="ticket-list">
+                        {% if view == 'created' and employee.role == 'super_manager' %}
+                            {% if created_tickets %}
+                                <div class="list-group">
+                                    {% for ticket in created_tickets %}
+                                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                                            <div class="d-flex flex-column">
+                                                <a href="{% url 'ticket_detail' ticket.id %}" class="text-decoration-none text-dark">
+                                                    <h5 class="mb-1">Ticket {{ ticket.id }}</h5>
+                                                    <p class="mb-1">Description: {{ ticket.ticket_description }}</p>
+                                                    <small>Assigned to: {{ ticket.employee.get_full_name }}</small>
+                                                    <br>
+                                                    <small>Status: {{ ticket.ticket_status.get_status_description }}</small>
+                                                    <br>
+                                                    <small>Created at: {{ ticket.created_at }}</small>
+                                                </a>
+                                            </div>
+                                            <div class="d-flex flex-column align-items-end">
+                                                <a href="{% url 'ticket_update' ticket.pk %}" class="btn btn-warning btn-sm">
+                                                    Change status
+                                                </a>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p>No tickets found.</p>
+                            {% endif %}
+                        {% elif employee.role == 'manager' or view != 'assigned' %}
+                            {% include 'tickets/partials/ticket_list.html' %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% if view == 'all_departments' and employee.role == 'super_manager' %}
+            <div class="col-md-4 align-self-start"> <!-- Adjust alignment as needed -->
+                <div class="card mt-5">
+                    <div class="card-header" style="color: dimgrey;">Ticket Status Charts</div>
+                    <div class="card-body">
+                        <canvas id="ticketPieChart"></canvas>
+                        <canvas id="ticketBarChart" class="mt-4" width="450" height="400"></canvas>
+                    </div>
+                </div>
+            </div>
+        {% elif employee.role == 'manager' %}
+            <div class="col-md-4 align-self-start">
+                <div class="card mt-5">
+                    <div class="card-header" style="color: dimgrey;">Open Tickets Over 5 Days</div>
+                    <div class="card-body">
+                        <canvas id="managerTicketBarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    fetchTicketStats();
+    fetchOpenTicketsOver5Days();
+
+    function fetchTicketStats() {
+        {% if view == 'all_departments' and employee.role == 'super_manager' %}
+            fetch('/department/ticket_stats/')
+            .then(response => response.json())
+            .then(data => {
+                let labels = [];
+                let counts = [];
+                data.forEach(status => {
+                    labels.push(status.ticket_status__status_description);
+                    counts.push(status.count);
+                });
+
+                // Create Pie Chart using Chart.js
+                var ctx = document.getElementById('ticketPieChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Ticket Statuses',
+                            data: counts,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.8)',
+                                'rgba(54, 162, 235, 0.8)',
+                                'rgba(255, 206, 86, 0.8)',
+                            ],
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        tooltips: {
+                            callbacks: {
+                                label: function(tooltipItem, data) {
+                                    var label = data.labels[tooltipItem.index];
+                                    var count = data.datasets[0].data[tooltipItem.index];
+                                    return `${label}: ${count} tickets`;
+                                }
+                            }
+                        },
+                        onClick: function(event, elements) {
+                            if (elements.length > 0) {
+                                let selectedStatus = elements[0].index;
+                                let statusLabel = labels[selectedStatus];
+                                fetchTicketsByStatus(statusLabel);
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Error fetching ticket stats:', error));
+        {% endif %}
+    }
+
+    function fetchOpenTicketsOver5Days() {
+        {% if view == 'all_departments' and employee.role == 'super_manager' %}
+            fetch('/department/open_tickets_over_5_days/')
+            .then(response => response.json())
+            .then(data => {
+                let labels = [];
+                let counts = [];
+                data.forEach(department => {
+                    labels.push(department.employee__department__department_name);
+                    counts.push(department.open_tickets_count);
+                });
+
+                // Bar chart for supermanager
+                var ctx = document.getElementById('ticketBarChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Tickets Open Over 5 Days',
+                            data: counts,
+                            backgroundColor: 'rgba(54, 162, 235, 0.8)'
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Error fetching open tickets over 5 days:', error));
+        {% elif employee.role == 'manager' %}
+            fetch('/department/manager_open_tickets_over_5_days/')
+            .then(response => response.json())
+            .then(data => {
+                let labels = [];
+                let counts = [];
+                data.forEach(department => {
+                    labels.push(department.department_name);
+                    counts.push(department.open_tickets_count);
+                });
+
+                // Bar chart for manager
+                let maxCount = Math.max(...counts);
+                let yMax = maxCount + 5; // adding buffer to max value
+
+                var ctx = document.getElementById('managerTicketBarChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Tickets Open Over 5 Days',
+                            data: counts,
+                            backgroundColor: 'rgba(54, 162, 235, 0.8)'
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: yMax
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Error fetching open tickets over 5 days:', error));
+        {% endif %}
+    }
+
+    function fetchTicketsByStatus(statusLabel) {
+        fetch(`/department/tickets/?status=${encodeURIComponent(statusLabel)}`)
+            .then(response => response.json())
+            .then(data => {
+                const ticketListContainer = document.getElementById('ticket-list');
+                ticketListContainer.innerHTML = ''; // clear existing content
+                data.forEach(ticket => {
+                    const ticketItem = document.createElement('div');
+                    ticketItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                    ticketItem.innerHTML = 
+                        `<div class="d-flex flex-column">
+                            <a href="/ticket/${ticket.id}/" class="text-decoration-none text-dark">
+                                <h5 class="mb-1">Ticket ${ticket.id}</h5>
+                                <p class="mb-1">Description: ${ticket.ticket_description}</p>
+                                <small>Assigned to: ${ticket.employee_full_name}</small>
+                                <br>
+                                <small>Status: ${ticket.ticket_status}</small>
+                                <br>
+                                <small>Created at: ${ticket.created_at}</small>
+                            </a>
+                        </div>
+                        <div class="d-flex flex-column align-items-end">
+                            <a href="/ticket/update/${ticket.id}/" class="btn btn-warning btn-sm">Change status</a>
+                        </div>`;
+                    ticketListContainer.appendChild(ticketItem);
+                });
+            })
+            .catch(error => console.error('Error fetching tickets by status:', error));
+    }
+});
+</script>
+{% endblock %}
