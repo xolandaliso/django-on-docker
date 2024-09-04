@@ -76,9 +76,6 @@
                                 <small>Created at: {{ ticket.created_at }}</small>
                             </a>
                         </div>
-                        <div class="d-flex flex-column align-items-end">
-                            <a href="{% url 'ticket_update' ticket.pk %}" class="btn btn-warning btn-sm">Change status</a>
-                        </div>
                     </div>
                 {% endfor %}
             </div>

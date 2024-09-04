@@ -6,12 +6,10 @@
     {% load static %}
 </head>
 <body style="font-family: Arial, sans-serif; color: #333; margin: 0; padding: 0;">
-    <p style="font-size: 15px; color: grey;">Dear {{ employee_name }},</p>
-    <br>
-    <p style="font-size: 14px;">A new ticket has been assigned to you.</p>
-    <br>
-    <p style="font-size: 14px; color: grey;"><strong>Details:</strong></p>
-    <ul style="font-size: 14px; list-style: none; padding: 0; color: grey;">
+    <p>Dear {{ employee_name }},</p>
+    <p>A new ticket has been assigned to you.</p>
+    <p ><strong>Details:</strong></p>
+    <ul>
         <li><strong>Type:</strong> {{ ticket_type }}</li>
         <br>
         <li><strong>Description:</strong> {{ ticket_description }}</li>
@@ -23,6 +21,7 @@
         <a href="{{ status_url }}" style="background-color:#4CAF50;color:white;padding:14px 20px;text-align:center;text-decoration:none;display:inline-block;margin:10px 0;border-radius:4px;">Mark as In Progress</a>
 
     </ul>
+    <p>-------------------------------------------------------</p>
     <p style="font-size: 14px; color: grey;">Thank you,</p>
     <p style="font-size: 14px; color: grey;">TAD</p>
     <br>

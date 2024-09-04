@@ -32,7 +32,9 @@
                                 <p style="color: red;">{{ error }}</p>
                             {% endif %}
                         </form>
-                        <p class="mt-3 text-center" style="color: dimgrey;">No account yet? <a style="color: green;" href="{% url 'register' %}">Register</a></p>
+                        <p class="mt-3 text-center" style="color: dimgrey;">Don't have an account ? <a style="color: green;" href="{% url 'register' %}">Register</a></p>
+                        <p class="mt-3 text-center" style="color: dimgrey;">Forgot password ? <a style="color: green;" href="{%url 'password-reset'%}">Reset Password</a></p>
+
                     </div>
                 </div>
             </div>
