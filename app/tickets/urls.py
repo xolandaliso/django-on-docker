@@ -2,6 +2,14 @@ from . import views
 from django.urls import path
 from django.contrib.auth import views as auth_views
 
+from django.contrib.auth.views import (
+    LogoutView, 
+    PasswordResetView, 
+    PasswordResetDoneView, 
+    PasswordResetConfirmView,
+    PasswordResetCompleteView
+)
+
 
 urlpatterns = [
     path('', views.login_view, name='landing'),  # landing page
@@ -21,6 +29,17 @@ urlpatterns = [
 
 ]
 
+# password reset urls
+
+password_patterns = [
+    path('password-reset/', PasswordResetView.as_view(template_name='password/password_reset.html',  html_email_template_name='password/password_reset_email.html'),name='password-reset'),
+    path('password-reset/done/', PasswordResetDoneView.as_view(template_name='password/password_reset_done.html'),name='password_reset_done'),
+    path('password-reset-confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(template_name='password/password_reset_confirm.html'),name='password_reset_confirm'),
+    path('password-reset-complete/',PasswordResetCompleteView.as_view(template_name='password/password_reset_complete.html'),name='password_reset_complete'),
+]
+
+urlpatterns += password_patterns
+
 htmx_urlpatterns = [
     path('get_manage_tickets/', views.get_manage_tickets, name='get_manage_tickets'),
     path('ticket/<int:pk>/', views.ticket_detail, name='ticket_detail'),
@@ -39,7 +58,6 @@ htmx_urlpatterns = [
     path('recurring-ticket/create/', views.create_recurring_ticket, name='create_recurring_ticket'),
 
 ]
-
 
 urlpatterns += htmx_urlpatterns
 
