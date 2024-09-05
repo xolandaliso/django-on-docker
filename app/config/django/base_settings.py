@@ -22,7 +22,7 @@ ALLOWED_HOSTS = os.environ.get(
     "DJANGO_ALLOWED_HOSTS",
 ).split(" ")
 
-INTERNAL_IPS = [
+INTERNAL_IPS = [    
     "127.0.0.1",
 ]
 
