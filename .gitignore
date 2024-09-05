@@ -18,3 +18,4 @@ results
 logs
 *.logs
 venv
+app/celerybeat-schedule
