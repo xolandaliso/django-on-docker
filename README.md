@@ -1,4 +1,4 @@
-## $textsc{Ticketing Portal Application with django}$
+## Ticketing Portal Application with django
 
 ## Inspiration
 
